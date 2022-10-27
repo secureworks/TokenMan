@@ -28,6 +28,7 @@ from tokenman.state import RunState
 # Command handlers
 from tokenman.az import AZ
 from tokenman.fetch import Fetch
+from tokenman.oauth import OAuth
 from tokenman.search import Search
 from tokenman.swap import Swap
 
@@ -91,3 +92,12 @@ if __name__ == "__main__":
     elif args.command == "az":
 
         AZ.run(state=state, client_id=args.client_id)
+
+    # Handle 'oauth' command
+    elif args.command == "oauth":
+
+        OAuth.run(
+            state=state,
+            client_id=args.client_id,
+            scope=args.scope,
+        )

@@ -132,6 +132,30 @@ def parse_args() -> argparse.Namespace:
         help="application client id or name to exchange token for [default: Azure CLI]",
     )
 
+    # Manage 'oauth' command
+    # Do not inherit base subparser as we don't need refresh/access tokens
+    # tokenman.py oauth -c/--client-id ... [-s/--scope ...]
+    oauth_parser = subparsers.add_parser("oauth", help="Perform OAuth device code flow")
+    oauth_parser.add_argument("--debug", action="store_true", help="enable debugging")
+    oauth_parser.add_argument(
+        "--proxy",
+        type=str,
+        help="HTTP proxy url (e.g. http://127.0.0.1:8080)",
+    )
+    oauth_parser.add_argument(
+        "-c",
+        "--client-id",
+        type=str,
+        default="04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+        help="application client id or name to request token for [default: Azure CLI]",
+    )
+    oauth_parser.add_argument(
+        "--scope",
+        type=str,
+        default=".default",
+        help="token scope (comma delimited) [default: .default]",
+    )
+
     args = parser.parse_args()
 
     if not args.command:
@@ -225,5 +249,25 @@ def parse_args() -> argparse.Namespace:
         # Require refresh token for token exchange
         if not args.refresh_token:
             parser.error("-r/--refresh-token required for 'az' command")
+
+    elif args.command == "oauth":
+        if not args.client_id:
+            parser.error("-c/--client-id required for 'oauth' command")
+
+        # Check client name, get client id
+        if args.client_id in utils.FOCI_CLIENT_IDS.keys():
+            args.client_id = utils.FOCI_CLIENT_IDS[args.client_id]
+
+        else:
+            # Validate client id if provided directly
+            if args.client_id not in utils.FOCI_CLIENT_IDS.values():
+                parser.error("invalid 'oauth' client id")
+
+        if args.scope:
+            args.scope = args.scope.split(",")
+
+        # Create empty token cache values
+        args.access_token = None
+        args.refresh_token = None
 
     return args

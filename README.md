@@ -18,21 +18,23 @@
   - [Swap](#swap)
     - [FOCI Application Client ID Map](#foci-application-client-id-map)
   - [AZ](#az)
+  - [OAuth](#oauth)
 
 ## Usage
 
 ```
-usage: tokenman.py [-h] {fetch,search,swap,az} ...
+usage: tokenman.py [-h] {fetch,search,swap,az,oauth} ...
 
-Token Man -- v0.1.0
+Token Man -- v0.1.1
 
 positional arguments:
-  {fetch,search,swap,az}
+  {fetch,search,swap,az,oauth}
                         Command
     fetch               Retrieve data via Graph API
     search              Search content via Graph API
     swap                Exchange a refresh token
     az                  Generate Azure CLI authentication files
+    oauth               Perform OAuth device code flow
 
 options:
   -h, --help           show this help message and exit
@@ -238,4 +240,39 @@ options:
 [2022-10-13 14:00:05,288] [info] Generating Azure Profile
 [2022-10-13 14:00:06,578] [info]     Writing Azure Profile to disk
 [2022-10-13 14:00:06,578] [info] Successfully generated Azure CLI authentication files
+```
+
+### OAuth
+
+Generate a refresh and access token using the device code flow using credentials for authentication.
+
+```
+usage: tokenman.py oauth [-h] [--debug] [--proxy PROXY] [-c CLIENT_ID]
+                         [--scope SCOPE]
+
+options:
+  -h, --help            show this help message and exit
+
+  --debug               enable debugging
+
+  --proxy PROXY
+                        HTTP proxy url (e.g. http://127.0.0.1:8080)
+
+  -c CLIENT_ID, --client-id CLIENT_ID
+                        application client id or name to request token for
+                        [default: Azure CLI]
+
+  --scope SCOPE
+                        token scope (comma delimited) [default: .default]
+```
+
+```
+> python3 tokenman.py oauth
+
+[2022-10-27 14:32:35,574] [info] Requesting new device code
+[2022-10-27 14:32:35,927] [info] Starting authentication poll in background
+[2022-10-27 14:32:35,929] [info] Launching browser for authentication
+[2022-10-27 14:32:35,929] [info] Enter the following device code: XXXXXXXXX
+[2022-10-27 14:32:35,929] [info] Close the browser or tab once authentication has completed to continue
+[2022-10-27 14:32:58,683] [info]        Output: data/devicecode.token.20221027183258.json
 ```

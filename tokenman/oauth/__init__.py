@@ -12,7 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# fmt: off
-
-__title__   = "Token Man"
-__version__ = "0.1.1"
+from tokenman.oauth.oauth import OAuth
